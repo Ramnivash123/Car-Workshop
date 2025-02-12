@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Car Workshop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4 text-white shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-xl font-bold">Car Workshop</a>
+            <div class="space-x-4 flex items-center">
+                <a href="{{url_for('logout')}}" class="hover:underline">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="container mx-auto text-center py-20">
+        <h1 class="text-4xl font-bold text-gray-800">Dashboard</h1>
+        <p class="text-lg text-gray-600 mt-4">Manage your account and services here.</p>
+        {% if session['username'] %}
+            <span class="text-black-200">Welcome, {{ session['username'] }}</span>
+        {% endif %}
+    </section>
+
+    <!-- User Actions -->
+    <section class="container mx-auto text-center py-16 bg-white">
+        <h2 class="text-3xl font-bold text-gray-800">Your Services</h2>
+        <div class="mt-6 grid md:grid-cols-3 gap-8">
+            <div class="bg-gray-200 p-6 rounded-lg shadow">
+                <h3 class="text-xl font-semibold text-gray-700">Add a Service</h3>
+                <a href="{{url_for('upload_receipt')}}" class="hover:underline">Add</a>
+            </div>
+            <div class="bg-gray-200 p-6 rounded-lg shadow">
+                <h3 class="text-xl font-semibold text-gray-700">Previous Services</h3>
+                <a href="{{url_for('view_receipts')}}" class="hover:underline">History</a>
+            </div>
+            <div class="bg-gray-200 p-6 rounded-lg shadow">
+                <h3 class="text-xl font-semibold text-gray-700">Service Analysis</h3>
+                <a href="{{url_for('analysis')}}" class="hover:underline">Analysis</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white text-center p-4 mt-10">
+        <p>&copy; 2025 Car Workshop. All rights reserved.</p>
+    </footer>
+</body>
+</html>
