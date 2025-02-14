@@ -4,8 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from PIL import Image  # Import the Image module
-from easyocr import Reader
-import numpy as np
+
 
 
 app = Flask(__name__)
@@ -26,7 +25,6 @@ class Receipts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
     car_name = db.Column(db.String(100), nullable=False)
-    total_cost = db.Column(db.Integer, nullable=False)
     engine_oil_cost = db.Column(db.Integer, nullable=False)
     oil_filter_cost = db.Column(db.Integer, nullable=False)
     air_filter_cost = db.Column(db.Integer, nullable=False)
@@ -109,7 +107,7 @@ def analysis():
 @app.route('/upload_receipt', methods=['GET', 'POST'])
 def upload_receipt():
     if request.method == 'POST':
-        total_cost = request.form['total_cost']
+        car_name = request.form["car_name"]
         engine_oil_cost = request.form['engine_oil_cost']
         oil_filter_cost = request.form['oil_filter_cost']
         air_filter_cost = request.form['air_filter_cost']
@@ -118,8 +116,7 @@ def upload_receipt():
         # Assuming you have the 'car_name' and 'username' available in your context
         new_receipt = Receipts(
             username=session["username"],  # Replace with actual username
-            car_name="i10",   # Replace with actual car name
-            total_cost=total_cost,
+            car_name=car_name,   # Replace with actual car name
             engine_oil_cost=engine_oil_cost,
             oil_filter_cost=oil_filter_cost,
             air_filter_cost=air_filter_cost,
