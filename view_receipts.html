@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Workshop - Receipts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4 text-white shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold">Car Workshop</a>
+            <div>
+                <a href="{{ url_for('logout') }}" class="hover:underline text-lg">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Receipt List Section -->
+    <section class="container mx-auto text-center py-16">
+        <h1 class="text-4xl font-bold text-gray-800">Uploaded Receipts</h1>
+
+        {% if receipts %}
+            <div class="mt-8 space-y-4">
+                {% for receipt in receipts %}
+                    <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-semibold text-gray-800">Receipt for {{ receipt.car_name }}</h2>
+                        <p class="text-lg text-gray-600 mt-2">Username: {{ receipt.username }}</p>
+                        <p class="text-lg text-gray-600">Model: {{ receipt.car_name }}</p>
+                        <p class="text-lg text-gray-600">Engine Oil Cost: ₹{{ receipt.engine_oil_cost }}</p>
+                        <p class="text-lg text-gray-600">Oil Filter Cost: ₹{{ receipt.oil_filter_cost }}</p>
+                        <p class="text-lg text-gray-600">Air Filter Cost: ₹{{ receipt.air_filter_cost }}</p>
+                        <p class="text-lg text-gray-600">Date: {{ receipt.update_date }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-lg text-gray-600 mt-4">No receipts uploaded yet.</p>
+        {% endif %}
+        
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white text-center p-4 mt-16">
+        <p>&copy; 2025 Car Workshop. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

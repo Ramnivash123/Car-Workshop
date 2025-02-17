@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Car Workshop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4 text-white shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-xl font-bold">Car Workshop</a>
+            <div class="space-x-4 flex items-center">
+                <a href="{{url_for('logout')}}" class="hover:underline">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="relative flex flex-col items-center justify-center text-center h-80 px-6 bg-cover bg-center bg-no-repeat"  
+    style="background-image: url('https://images.pexels.com/photos/136872/pexels-photo-136872.jpeg?cs=srgb&dl=pexels-mikebirdy-136872.jpg&fm=jpg');">
+
+    <h1 class="text-4xl font-bold text-black">Dashboard</h1>
+    <p class="text-lg font-bold text-black-200 mt-4">Manage your account and services here.</p>
+
+    {% if session['username'] %}
+        <span class="font-bold text-black-200 mt-2">Welcome, {{ session['username'] }}</span>
+    {% endif %}
+    </section>
+
+
+    <!-- User Actions -->
+    <section class="container mx-auto text-center py-16 bg-gray-100">
+        <h2 class="text-4xl font-bold text-gray-900 mb-8">Your Services</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 px-6">
+            <!-- Add a Service -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-105">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Add a Service</h3>
+                <p class="text-gray-600 mb-4">Upload a receipt to add a new service to your records.</p>
+                <a href="{{ url_for('upload_receipt') }}" 
+                   class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition">Add</a>
+            </div>
+    
+            <!-- Previous Services -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-105">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Previous Services</h3>
+                <p class="text-gray-600 mb-4">View your past services and history.</p>
+                <a href="{{ url_for('view_receipts') }}" 
+                   class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition">History</a>
+            </div>
+    
+            <!-- Service Analysis -->
+            <div class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-105">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Service Analysis</h3>
+                <p class="text-gray-600 mb-4">Analyze your service patterns and expenses.</p>
+                <a href="{{ url_for('analysis') }}" 
+                   class="inline-block bg-blue-600 text-white px-5 py-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition">Analysis</a>
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white text-center p-4 mt-10">
+        <p>&copy; 2025 Car Workshop. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Workshop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-5 shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-white">Car Workshop</a>
+            <div class="space-x-6">
+                <a href="#home" class="text-white hover:text-gray-300 transition">Home</a>
+                <a href="{{url_for('register')}}" class="text-white hover:text-gray-300 transition">Signup</a>
+                <a href="{{url_for('register2')}}" class="text-white hover:text-gray-300 transition">Signin</a>
+            </div>
+        </div>
+    </nav>
+
+     <!-- Hero Section -->
+     <section id="home" class="relative flex items-center justify-center text-center py-24 px-6 bg-cover bg-center bg-no-repeat" style="background-image: url('https://autoaid.in/wp-content/uploads/2023/12/Best-Car-Workshop-in-Kochi-for-Efficient-Car-Servicing.jpg');">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="relative z-10">
+            <h1 class="text-5xl font-extrabold text-white">Welcome to Our Car Workshop</h1>
+            <p class="text-lg text-gray-200 mt-4 max-w-2xl mx-auto">Your trusted partner for vehicle repair and maintenance.</p>
+            <button class="mt-6 bg-blue-600 text-white px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 transition transform hover:scale-105">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="container mx-auto text-center py-16 bg-gray-100 rounded-lg">
+        <h2 class="text-4xl font-bold text-gray-900">Our Services</h2>
+        <div class="mt-10 grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition">
+                <h3 class="text-2xl font-semibold text-gray-700">Engine Repair</h3>
+                <p class="text-gray-600 mt-3">We diagnose and fix all engine issues with precision.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition">
+                <h3 class="text-2xl font-semibold text-gray-700">Tire Replacement</h3>
+                <p class="text-gray-600 mt-3">Top-quality tires and expert fitting for safety on the road.</p>
+            </div>
+            <div class="bg-white p-8 rounded-xl shadow-md hover:shadow-lg transition">
+                <h3 class="text-2xl font-semibold text-gray-700">Oil Change</h3>
+                <p class="text-gray-600 mt-3">Keep your engine running smoothly with our premium oil change service.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="container mx-auto text-center py-16 bg-white">
+        <h2 class="text-4xl font-bold text-gray-900">What Our Clients Say</h2>
+        <div class="mt-8 space-y-8 max-w-2xl mx-auto">
+            <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                <p class="text-gray-700 italic">"Excellent service! My car runs like new again!"</p>
+                <span class="block text-gray-600 mt-3 font-semibold">- John Doe</span>
+            </div>
+            <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+                <p class="text-gray-700 italic">"Professional and affordable, highly recommended!"</p>
+                <span class="block text-gray-600 mt-3 font-semibold">- Sarah Lee</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="container mx-auto text-center py-16 bg-gray-100 rounded-lg">
+        <h2 class="text-4xl font-bold text-gray-900">Get in Touch</h2>
+        <p class="text-lg text-gray-600 mt-4">Have a question? Contact us today!</p>
+        <form class="mt-8 space-y-4 max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md">
+            <input type="text" placeholder="Your Name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200">
+            <input type="email" placeholder="Your Email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200">
+            <textarea placeholder="Your Message" class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200"></textarea>
+            <button class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 transition transform hover:scale-105">Send Message</button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white text-center p-6 mt-10 shadow-lg">
+        <p class="text-lg">&copy; 2025 Car Workshop. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cost Analysis - Car Workshop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-blue-600 p-4 text-white shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-xl font-bold">Car Workshop</a>
+            <div class="space-x-4 flex items-center">
+                <a href="{{url_for('logout')}}" class="hover:underline">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cost Analysis Section -->
+    <section class="container mx-auto text-center py-16">
+        <h1 class="text-4xl font-bold text-gray-900 mb-8">Car Maintenance Cost Analysis</h1>
+        
+        <form method="POST" class="bg-white p-6 rounded-2xl shadow-lg max-w-lg mx-auto">
+            <label for="car_name" class="block text-lg font-semibold mb-2">Select Car:</label>
+            <select name="car_name" id="car_name" class="w-full p-2 border border-gray-300 rounded-lg mb-4">
+                {% for car in cars %}
+                    <option value="{{ car }}" {% if car == selected_car %}selected{% endif %}>{{ car }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition">Show Analysis</button>
+        </form>
+    </section>
+    
+    {% if chart_img %}
+    <section class="container mx-auto text-center py-10">
+        <h2 class="text-3xl font-semibold text-gray-900 mb-6">Total Cost Prediction for Jan-Dec</h2>
+        <img src="data:image/png;base64,{{ chart_img }}" alt="Cost Prediction Chart" class="mx-auto rounded-lg shadow-lg">
+    </section>
+    {% endif %}
+    
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white text-center p-4 mt-10">
+        <p>&copy; 2025 Car Workshop. All rights reserved.</p>
+    </footer>
+</body>
+</html>
