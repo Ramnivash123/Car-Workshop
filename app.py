@@ -129,129 +129,119 @@ def view_receipts():
     return render_template('view_receipts.html', receipts=receipts)
 
 
-from flask import render_template, request, jsonify
-from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
 import calendar
+import matplotlib.pyplot as plt
+import seaborn as sns
+import io
+import base64
+from datetime import datetime
+from flask import Flask, render_template, request
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
+from flask_sqlalchemy import SQLAlchemy
+from sklearn.preprocessing import LabelEncoder
 
-def prepare_model_data(receipts):
-    """Prepare data for the model from receipts."""
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import calendar
+import io
+import base64
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestRegressor
+from flask import render_template, request
+
+# Function to prepare data from the database
+def prepare_model_data(car_name):
+    """Prepare data for the model from receipts of a particular car."""
+    # Query data from the Receiptss table
+    receipts = Receiptss.query.filter_by(car_name=car_name).order_by(Receiptss.update_date).all()
+    
+    # Prepare data
     data = []
     for receipt in receipts:
-        month = receipt.update_date.strftime("%b")
+        month_name = calendar.month_abbr[receipt.update_date.month]  # Convert to "Jan", "Feb", etc.
         data.append({
-            "Date": month,
-            "Total_Cost": receipt.engine_oil_cost + receipt.oil_filter_cost + receipt.air_filter_cost,
-            "Engine_Oil_Cost": receipt.engine_oil_cost,
-            "Oil_Filter_Cost": receipt.oil_filter_cost,
-            "Air_Filter_Cost": receipt.air_filter_cost
+            "Month": month_name,
+            "Month_Num": receipt.update_date.month,  # Numeric month for sorting
+            "Total_Cost": receipt.engine_oil_cost + receipt.oil_filter_cost + receipt.air_filter_cost
         })
-    return pd.DataFrame(data)
+    
+    # Convert to DataFrame
+    df = pd.DataFrame(data)
+    
+    # Ensure we have all months (Jan-Dec) in the DataFrame
+    all_months = list(calendar.month_abbr[1:])  # Skip the empty string in month_abbr[0]
+    missing_months = [month for month in all_months if month not in df["Month"].values]
 
+    # Create a DataFrame for missing months
+    missing_data = pd.DataFrame({
+        "Month": missing_months,
+        "Month_Num": [list(calendar.month_abbr[1:]).index(month) + 1 for month in missing_months],  # Correct month index
+        "Total_Cost": [0] * len(missing_months)  # Assuming total cost 0 for missing months
+    })
+
+    # Concatenate the missing months with the original DataFrame
+    df = pd.concat([df, missing_data], ignore_index=True)
+    
+    # Sort data by month number and aggregate the costs
+    df = df.groupby(["Month", "Month_Num"]).sum().reset_index().sort_values("Month_Num")
+    return df
+
+# Function to generate the chart
+def generate_cost_chart(df):
+    """Generate a line chart with actual vs. predicted costs."""
+    # Encode month names to numbers
+    le = LabelEncoder()
+    df["Month_Encoded"] = le.fit_transform(df["Month"])
+
+    # Train RandomForestRegressor
+    model = RandomForestRegressor(n_estimators=100, random_state=42)
+    model.fit(df[["Month_Encoded"]], df["Total_Cost"])
+    
+    # Predict future values
+    df["Predicted_Cost"] = model.predict(df[["Month_Encoded"]])
+
+    # Plot actual vs. predicted costs
+    plt.figure(figsize=(10, 5))
+    sns.lineplot(x=df["Month"], y=df["Total_Cost"], marker='o', linestyle='-', label="Actual Cost")
+    sns.lineplot(x=df["Month"], y=df["Predicted_Cost"], marker='s', linestyle='--', label="Predicted Cost")
+    
+    
+    plt.xlabel("Month")
+    plt.ylabel("Total Cost")
+    plt.title("Car Maintenance Cost Over Time")
+    plt.xticks(rotation=45)
+    plt.legend()
+    
+    # Convert plot to base64 image
+    img = io.BytesIO()
+    plt.savefig(img, format="png", bbox_inches="tight")
+    img.seek(0)
+    return base64.b64encode(img.getvalue()).decode()
+
+# Flask route to handle analysis and display the chart
 @app.route('/analysis', methods=['GET', 'POST'])
 def analysis():
     if request.method == 'GET':
-        # Get unique car names for the dropdown
         cars = db.session.query(Receiptss.car_name).distinct().all()
         cars = [car[0] for car in cars]
         return render_template('analysis.html', cars=cars)
-    
-    # Handle POST request
+
     car_name = request.form.get('car_name')
+    df = prepare_model_data(car_name)
     
-    # Get receipts for the selected car
-    receipts = Receiptss.query.filter_by(car_name=car_name).order_by(Receiptss.update_date).all()
-    
-    if not receipts:
-        return render_template('analysis.html', error="No data available for selected car")
-    
-    # Prepare data for the model
-    df = prepare_model_data(receipts)
-    
-    # Month mapping and data preparation (same as in the model code)
-    month_mapping = {
-        "Jan": 1, "Feb": 2, "Mar": 3, "Apr": 4, "May": 5,
-        "Jun": 6, "Jul": 7, "Aug": 8, "Sep": 9, "Oct": 10,
-        "Nov": 11, "Dec": 12
-    }
-    df["Month_Num"] = df["Date"].map(month_mapping)
-    
-    # Add cyclical features
-    df['Month_Sin'] = np.sin(2 * np.pi * df['Month_Num']/12)
-    df['Month_Cos'] = np.cos(2 * np.pi * df['Month_Num']/12)
-    
-    # Prepare features
-    X = df[["Month_Num", "Month_Sin", "Month_Cos", "Engine_Oil_Cost", "Oil_Filter_Cost", "Air_Filter_Cost"]]
-    y = df["Total_Cost"]
-    
-    # Scale features
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    
-    # Train model with best parameters from grid search
-    model = RandomForestRegressor(
-        n_estimators=100,
-        max_depth=5,
-        min_samples_split=2,
-        min_samples_leaf=1,
-        max_features='sqrt',
-        random_state=42
-    )
-    model.fit(X_scaled, y)
-    
-    # Generate predictions for all months
-    future_months = np.array(range(1, 13))
-    future_sin = np.sin(2 * np.pi * future_months/12)
-    future_cos = np.cos(2 * np.pi * future_months/12)
-    
-    # Create future dataset using averages
-    future_data = pd.DataFrame({
-        "Month_Num": future_months,
-        "Month_Sin": future_sin,
-        "Month_Cos": future_cos,
-        "Engine_Oil_Cost": [df["Engine_Oil_Cost"].mean()] * 12,
-        "Oil_Filter_Cost": [df["Oil_Filter_Cost"].mean()] * 12,
-        "Air_Filter_Cost": [df["Air_Filter_Cost"].mean()] * 12
-    })
-    
-    # Scale and predict
-    future_data_scaled = scaler.transform(future_data)
-    predicted_costs = model.predict(future_data_scaled)
-    
-    # Calculate metrics
-    y_pred = model.predict(X_scaled)
-    accuracy = round((1 - abs(np.mean((y - y_pred) / y))) * 100, 2)
-    
-    # Prepare analysis data for template
-    analysis_data = {
-        'metrics': {
-            'avg_cost': int(df['Total_Cost'].mean()),
-            'next_month': int(predicted_costs[datetime.now().month % 12]),
-            'total_spent': int(df['Total_Cost'].sum()),
-            'accuracy': accuracy
-        },
-        'importance': {
-            'labels': ['Engine Oil', 'Oil Filter', 'Air Filter'],
-            'values': model.feature_importances_[-3:].tolist()  # Last 3 features are costs
-        },
-        'trends': {
-            'months': list(calendar.month_abbr)[1:],
-            'actual': df['Total_Cost'].tolist(),
-            'predicted': predicted_costs.tolist()
-        }
-    }
-    
+    # Generate chart
+    chart_img = generate_cost_chart(df)
+
     # Get car list for dropdown
     cars = db.session.query(Receiptss.car_name).distinct().all()
     cars = [car[0] for car in cars]
-    
-    return render_template('analysis.html', 
-                         cars=cars,
-                         analysis_data=analysis_data,
-                         selected_car=car_name)
+
+    return render_template('analysis.html', cars=cars, selected_car=car_name, chart_img=chart_img)
 
 if __name__ == "__main__":
     app.run(debug=True)
