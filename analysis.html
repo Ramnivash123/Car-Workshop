@@ -5,43 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cost Analysis - Car Workshop</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
 </head>
 <body class="bg-gray-100">
     <!-- Navbar -->
-    <nav class="bg-blue-600 p-4 text-white shadow-md">
+    <nav class="bg-blue-600 p-4 text-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="#" class="text-xl font-bold">Car Workshop</a>
-            <div class="space-x-4 flex items-center">
-                <a href="{{url_for('logout')}}" class="hover:underline">Logout</a>
+            <a href="#" class="text-xl font-bold flex items-center">
+                <i class="fas fa-chart-line mr-2"></i>
+                Car Workshop
+            </a>
+            <div class="flex items-center space-x-6">
+                <a href="{{ url_for('service') }}" class="hover:text-gray-200 transition">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+                </a>
+                <a href="{{url_for('logout')}}" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
             </div>
         </div>
     </nav>
 
-    <!-- Cost Analysis Section -->
-    <section class="container mx-auto text-center py-16">
-        <h1 class="text-4xl font-bold text-gray-900 mb-8">Car Maintenance Cost Analysis</h1>
-        
-        <form method="POST" class="bg-white p-6 rounded-2xl shadow-lg max-w-lg mx-auto">
-            <label for="car_name" class="block text-lg font-semibold mb-2">Select Car:</label>
-            <select name="car_name" id="car_name" class="w-full p-2 border border-gray-300 rounded-lg mb-4">
-                {% for car in cars %}
-                    <option value="{{ car }}" {% if car == selected_car %}selected{% endif %}>{{ car }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-lg font-medium hover:bg-blue-700 transition">Show Analysis</button>
-        </form>
+    <!-- Header Section -->
+    <section class="bg-white shadow-md">
+        <div class="container mx-auto py-8 px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Cost Analysis Dashboard</h1>
+                    <p class="text-gray-600 mt-2">Track and analyze your vehicle maintenance expenses</p>
+                </div>
+                <div class="mt-4 md:mt-0">
+                    <button class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg mr-2">
+                        <i class="fas fa-download mr-2"></i>Export Report
+                    </button>
+                    <button class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg">
+                        <i class="fas fa-print mr-2"></i>Print
+                    </button>
+                </div>
+            </div>
+        </div>
     </section>
+
     
-    {% if chart_img %}
-    <section class="container mx-auto text-center py-10">
-        <h2 class="text-3xl font-semibold text-gray-900 mb-6">Total Cost Prediction for Jan-Dec</h2>
-        <img src="data:image/png;base64,{{ chart_img }}" alt="Cost Prediction Chart" class="mx-auto rounded-lg shadow-lg">
+
+    <!-- Main Analysis Section -->
+    <section class="container mx-auto py-8 px-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Car Selection -->
+            <div class="md:col-span-1">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Select Vehicle</h2>
+                    <form method="POST" class="space-y-4">
+                        <div>
+                            <label for="car_name" class="block text-gray-700 font-medium mb-2">Choose Car:</label>
+                            <select name="car_name" id="car_name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-400">
+                                {% for car in cars %}
+                                    <option value="{{ car }}" {% if car == selected_car %}selected{% endif %}>{{ car }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition">
+                            Update Analysis
+                        </button>
+                    </form>
+                </div>
+
+                
+            </div>
+
+            <!-- Charts Section -->
+            <div class="md:col-span-2 space-y-6">
+                <!-- Cost Prediction Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">Cost Prediction (Jan-Dec)</h2>
+                        <div class="flex space-x-2">
+                            <button class="px-3 py-1 text-sm bg-gray-100 rounded-lg">Monthly</button>
+                            <button class="px-3 py-1 text-sm bg-gray-100 rounded-lg">Quarterly</button>
+                            <button class="px-3 py-1 text-sm bg-gray-100 rounded-lg">Yearly</button>
+                        </div>
+                    </div>
+                    {% if chart_img %}
+                        <img src="data:image/png;base64,{{ chart_img }}" alt="Cost Prediction Chart" class="w-full rounded-lg">
+                    {% endif %}
+                </div>
+
+                
+            </div>
+        </div>
     </section>
-    {% endif %}
-    
+
+    <!-- Recommendations Section -->
+    <section class="container mx-auto py-8 px-6">
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Cost Saving Recommendations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="border border-green-200 bg-green-50 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-lightbulb text-green-500 mt-1 mr-3"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Regular Maintenance</h3>
+                            <p class="text-sm text-gray-600">Following the recommended maintenance schedule can prevent costly repairs.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-blue-200 bg-blue-50 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-tools text-blue-500 mt-1 mr-3"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Service Packages</h3>
+                            <p class="text-sm text-gray-600">Bundle services together for better pricing and efficiency.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="border border-purple-200 bg-purple-50 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-calendar-alt text-purple-500 mt-1 mr-3"></i>
+                        <div>
+                            <h3 class="font-semibold text-gray-800">Preventive Care</h3>
+                            <p class="text-sm text-gray-600">Address minor issues early to avoid major expenses later.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="bg-blue-600 text-white text-center p-4 mt-10">
-        <p>&copy; 2025 Car Workshop. All rights reserved.</p>
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p>&copy; 2025 Car Workshop. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-gray-300 transition">Help Center</a>
+                    <a href="#" class="hover:text-gray-300 transition">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
     </footer>
-</body>
-</html>
