@@ -35,10 +35,12 @@
                     <p class="text-gray-600 mt-2">Track and analyze your vehicle maintenance expenses</p>
                 </div>
                 <div class="mt-4 md:mt-0">
+
                     <button class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg mr-2" onclick="sendAlert()">
                         <i class="fas fa-alert mr-2"></i>Send Alert Message
                     </button>
                     
+
                     <script>
                     function sendAlert() {
                         fetch('/send-alert', { method: 'POST' })
@@ -46,6 +48,8 @@
                             .then(data => alert(data.message || data.error))
                             .catch(error => console.error('Error:', error));
                     }
+
+                    
                     </script>
                     
                     <button class="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg">
@@ -98,6 +102,29 @@
                     </div>
                     {% if chart_img %}
                         <img src="data:image/png;base64,{{ chart_img }}" alt="Cost Prediction Chart" class="w-full rounded-lg">
+                    {% endif %}
+                    {% if max %}
+                        <div class="mt-4">
+                            <h3 class="text-lg font-semibold text-gray-800">
+                                Cost Rise at: 
+                                {# Map the value of max to the corresponding month #}
+                                {% set month_map = {
+                                    1: "Jan",
+                                    2: "Feb",
+                                    3: "Mar",
+                                    4: "Apr",
+                                    5: "May",
+                                    6: "Jun",
+                                    7: "Jul",
+                                    8: "Aug",
+                                    9: "Sep",
+                                    10: "Oct",
+                                    11: "Nov",
+                                    12: "Dec"
+                                } %}
+                                {{ month_map.get(max, "Invalid month") }}  {# Display the month or a fallback message #}
+                            </h3>
+                        </div>
                     {% endif %}
                 </div>
 
